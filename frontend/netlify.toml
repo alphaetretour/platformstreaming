@@ -1,0 +1,24 @@
+# Netlify Configuration for StreamManage Frontend
+
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Redirects for Single Page Application (SPA)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Environment variables
+[context.production.environment]
+  VITE_API_URL = "https://platformstreaming-backend.onrender.com/api"
+
+[context.deploy-preview.environment]
+  VITE_API_URL = "https://platformstreaming-backend.onrender.com/api"
+
+[context.branch-deploy.environment]
+  VITE_API_URL = "https://platformstreaming-backend.onrender.com/api"

@@ -17,8 +17,10 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
+
+// CORS configuration - allow all origins for Netlify
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: process.env.CORS_ORIGIN || '*',
   credentials: true,
 }));
 
@@ -65,6 +67,7 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`CORS Origin: ${process.env.CORS_ORIGIN || '*'}`);
 });
 
 module.exports = app;

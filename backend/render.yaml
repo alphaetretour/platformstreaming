@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: platformstreaming-backend
+    runtime: node
+    buildCommand: npm install && npx prisma generate
+    startCommand: npx prisma migrate deploy && npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: platformstreaming-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: CORS_ORIGIN
+        value: https://platformstreaming.netlify.app
+    autoDeploy: true
+    healthCheckPath: /health
+
+databases:
+  - name: platformstreaming-db
+    plan: free
+    region: eu-west-1

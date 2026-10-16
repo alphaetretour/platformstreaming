@@ -9,4 +9,10 @@ process.on('beforeExit', async () => {
   await prisma.$disconnect();
 });
 
+// For Render.com database connection
+if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('?schema=public')) {
+  // Add schema parameter if not present
+  process.env.DATABASE_URL = process.env.DATABASE_URL + '?schema=public';
+}
+
 module.exports = prisma;
