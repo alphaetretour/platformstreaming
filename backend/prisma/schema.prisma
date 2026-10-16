@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  name          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  subscriptions Subscription[]
+  credentials   PlatformCredential[]
+}
+
+model Platform {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  displayName String
+  logoUrl     String?
+  baseUrl     String?
+  apiEndpoint String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  subscriptions Subscription[]
+  credentials PlatformCredential[]
+}
+
+model Subscription {
+  id          String    @id @default(uuid())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  platform    Platform  @relation(fields: [platformId], references: [id])
+  platformId  String
+  status      SubscriptionStatus @default(ACTIVE)
+  startDate   DateTime  @default(now())
+  endDate     DateTime?
+  renewalDate DateTime?
+  price       Float?
+  currency    String?   @default("EUR")
+  autoRenew   Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, platformId])
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+  PENDING
+  SUSPENDED
+}
+
+model PlatformCredential {
+  id          String   @id @default(uuid())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  platform    Platform @relation(fields: [platformId], references: [id])
+  platformId  String
+  username    String?
+  password    String?
+  accessToken String?
+  refreshToken String?
+  tokenExpiry DateTime?
+  isConnected Boolean  @default(false)
+  lastSync    DateTime?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, platformId])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String?
+  action      String
+  entityType  String
+  entityId    String?
+  oldValue    Json?
+  newValue    Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+}
